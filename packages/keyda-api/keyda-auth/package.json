@@ -1,0 +1,9 @@
+{
+  "name": "keyda-auth",
+  "version": "1.0.0",
+  "description": "backend module for authentication using keystroke dynamics",
+  "main": "index.js",
+  "repository": "https://github.com/Keyda2020/KeyDa",
+  "author": "Anthony Min",
+  "license": "MIT"
+}
