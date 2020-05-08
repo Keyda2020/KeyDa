@@ -1,0 +1,9 @@
+{
+  "name": "keyda-react",
+  "version": "1.0.0",
+  "description": "react library for gathering user's typing pattern in form",
+  "main": "index.js",
+  "repository": "https://github.com/Keyda2020/KeyDa",
+  "author": "Anthony Min",
+  "license": "MIT"
+}
