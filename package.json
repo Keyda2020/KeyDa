@@ -3,8 +3,8 @@
   "private": true,
   "husky": {
     "hooks": {
-      "pre-commit": "bash ./scripts/check-protected-branch",
-      "pre-push": "bash ./scripts/check-protected-branch"
+      "pre-commit": "bash ./scripts/check-protected-branch.sh",
+      "pre-push": "bash ./scripts/check-protected-branch.sh"
     }
   },
   "devDependencies": {
