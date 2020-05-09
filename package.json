@@ -1,0 +1,13 @@
+{
+  "name": "root",
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "bash ./scripts/check-protected-branch",
+      "pre-push": "bash ./scripts/check-protected-branch"
+    }
+  },
+  "devDependencies": {
+    "husky": "^4.2.5"
+  }
+}
