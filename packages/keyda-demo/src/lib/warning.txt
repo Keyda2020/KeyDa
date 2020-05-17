@@ -1,0 +1,6 @@
+This directory is temporary.
+
+I need browser environment to develop the library functions temporarily.
+
+So, this directory is basically came from "keyda-react" package, 
+it should be removed after all of process are done.
