@@ -7,7 +7,7 @@ const RegisterForm = (props) => {
   console.log(Input);
   return (
     <div>
-      <Form onSubmit={() => console.log('submitted!')}>
+      <Form onSubmit={() => console.log('submitted!')} formType="REGISTER">
         <Input type="email" onChange={(e) => e.target.value} />
         <br />
         <Input type="password" onChange={(e) => e.target.value} />
