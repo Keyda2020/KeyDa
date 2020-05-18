@@ -1,11 +1,14 @@
 import React, { useCallback } from 'react';
+import { useKeyStateState } from '../Context';
 
 const Form = (props) => {
   const { onSubmit, children, ...rest } = props;
+  const keyState = useKeyStateState();
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     onSubmit();
+    console.log(keyState);
     console.log('inside of the library!');
   }, []);
 
@@ -18,4 +21,4 @@ const Form = (props) => {
   );
 };
 
-export default Form;
+export default React.memo(Form);
