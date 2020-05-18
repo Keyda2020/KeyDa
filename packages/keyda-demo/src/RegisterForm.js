@@ -5,7 +5,10 @@ const RegisterForm = (props) => {
   console.log(props);
   console.log(Form);
   console.log(Input);
-  const handleSubmit = useCallback(() => console.log('submitted!'), []);
+  const handleSubmit = useCallback(
+    () => console.log('Successfully submitted!'),
+    []
+  );
   return (
     <div>
       <Form onSubmit={handleSubmit} formType="REGISTER">

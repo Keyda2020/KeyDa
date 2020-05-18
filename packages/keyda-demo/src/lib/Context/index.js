@@ -3,30 +3,47 @@ import React, { createContext, useContext, useReducer } from 'react';
 const initialKeyState = {
   keyTimeList: [],
   userId: '',
+  trainCount: 0,
 };
 
 const keyStateReducer = (state, action) => {
-  const { keyTimeList, userId } = state;
+  const { keyTimeList, userId, trainCount } = state;
   switch (action.type) {
     case 'KEY_DOWN':
       return {
         keyTimeList: [...keyTimeList, ...action.newKeyTime],
-        userId: state.userId,
+        userId: userId,
+        trainCount: trainCount,
       };
     case 'KEY_UP':
       return {
         keyTimeList: [...keyTimeList, ...action.newKeyTime],
-        userId: state.userId,
+        userId: userId,
+        trainCount: trainCount,
       };
     case 'TYPE_USER_ID':
       return {
         keyTimeList: state.keyTimeList,
         userId: userId === action.userId ? userId : action.userId,
+        trainCount: trainCount,
       };
     case 'BACKSPACE':
       return {
         keyTimeList: [],
         userId: userId,
+        trainCount: trainCount,
+      };
+    case 'REGISTER':
+      return {
+        keyTimeList: keyTimeList,
+        userId: userId,
+        trainCount: trainCount < 5 ? trainCount + 1 : trainCount,
+      };
+    case 'SUBMIT':
+      return {
+        keyTimeList: [],
+        userId: '',
+        trainCount: 0,
       };
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
