@@ -1,13 +1,16 @@
 import React from 'react';
 
-const Form = (props, children) => {
-  const { onSubmit, ...rest } = props;
+import FormToSubmit from '../FormToSubmit';
+import { KeyStateProvider } from '../Context';
 
+const Form = (props) => {
   return (
     <React.Fragment>
-      <form {...rest}>{children}</form>
+      <KeyStateProvider>
+        <FormToSubmit {...props} />
+      </KeyStateProvider>
     </React.Fragment>
   );
 };
 
-export default Form;
+export default React.memo(Form);
