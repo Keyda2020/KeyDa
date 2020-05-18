@@ -9,13 +9,11 @@ const keyStateReducer = (state, action) => {
   const { keyTimeList, userId } = state;
   switch (action.type) {
     case 'KEY_DOWN':
-      console.log(action.type, state.keyTimeList);
       return {
         keyTimeList: [...keyTimeList, ...action.newKeyTime],
         userId: state.userId,
       };
     case 'KEY_UP':
-      console.log(action.type, state.keyTimeList);
       return {
         keyTimeList: [...keyTimeList, ...action.newKeyTime],
         userId: state.userId,

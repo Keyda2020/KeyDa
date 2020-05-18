@@ -7,7 +7,7 @@ const Input = (props) => {
   const { type, onChange, value, ...rest } = props;
   const [lastKeyDown, setLastKeyDown] = useState(0);
   const [lastKeyUp, setLastKeyUp] = useState(0);
-  // const [userId, setUserId] = useState('');
+
   const filteredKey = [
     'Enter',
     'Alt',
