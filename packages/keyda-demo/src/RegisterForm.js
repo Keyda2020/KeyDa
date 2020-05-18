@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Form, Input } from './lib';
 
 const RegisterForm = (props) => {
   console.log(props);
   console.log(Form);
   console.log(Input);
+  const handleSubmit = useCallback(() => console.log('submitted!'), []);
   return (
     <div>
-      <Form onSubmit={() => console.log('submitted!')}>
+      <Form onSubmit={handleSubmit} formType="REGISTER">
         <Input type="email" onChange={(e) => e.target.value} />
         <br />
         <Input type="password" onChange={(e) => e.target.value} />

@@ -1,21 +1,16 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+
+import FormToSubmit from '../FormToSubmit';
+import { KeyStateProvider } from '../Context';
 
 const Form = (props) => {
-  const { onSubmit, children, ...rest } = props;
-
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    onSubmit();
-    console.log('inside of the library!');
-  }, []);
-
   return (
     <React.Fragment>
-      <form onSubmit={handleSubmit} {...rest}>
-        {children}
-      </form>
+      <KeyStateProvider>
+        <FormToSubmit {...props} />
+      </KeyStateProvider>
     </React.Fragment>
   );
 };
 
-export default Form;
+export default React.memo(Form);
