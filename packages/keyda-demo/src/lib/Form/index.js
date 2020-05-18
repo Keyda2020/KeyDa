@@ -5,12 +5,14 @@ const Form = (props) => {
   const { onSubmit, children, ...rest } = props;
   const keyState = useKeyStateState();
 
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    onSubmit();
-    console.log(keyState);
-    console.log('inside of the library!');
-  }, []);
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      onSubmit();
+      console.log(keyState);
+    },
+    [keyState, onSubmit]
+  );
 
   return (
     <React.Fragment>
