@@ -29,8 +29,8 @@ const Input = (props) => {
     (e) => {
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        console.log(lastKeyDown, lastKeyUp);
-        console.log('down', timeStamp);
+        // console.log(lastKeyDown, lastKeyUp);
+        // console.log('down', timeStamp);
         if (lastKeyDown === 0) setLastKeyDown(timeStamp);
         if (lastKeyDown > 0 && lastKeyUp > 0) {
           const newKeyTimeDD = timeStamp - lastKeyDown;
@@ -58,8 +58,8 @@ const Input = (props) => {
       }
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        console.log(lastKeyDown, lastKeyUp);
-        console.log('up', timeStamp);
+        // console.log(lastKeyDown, lastKeyUp);
+        // console.log('up', timeStamp);
         if (lastKeyUp === 0) setLastKeyUp(timeStamp);
         if (lastKeyDown > 0) {
           const newKeyTimeDU = timeStamp - lastKeyDown;
