@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import _ from 'lodash';
 import axios from 'axios';
 
@@ -7,7 +7,7 @@ import { useKeyStateState, useKeyStateDispatch } from '../Context';
 const FormToSubmit = (props) => {
   const definedFormTypes = ['REGISTER', 'LOGIN', 'CHANGE_PW'];
   const { onSubmit, formType, children, ...rest } = props;
-  console.log(children);
+
   if (!formType) {
     throw new Error(
       'You should pass the "formType" prop explicitly to define a mechanism of KeyDa form.\nYou can choose one of "REGISTER", "LOGIN", "CHANGE_PW" matched with your usage.'
@@ -25,29 +25,35 @@ const FormToSubmit = (props) => {
   const keyDispatch = useKeyStateDispatch();
 
   const handleSubmit = useCallback(
-    async (e) => {
+    (e) => {
       e.preventDefault();
-      const formData = new FormData();
-      console.log(formData);
-      formData.append('keyTimeList', keyState.keyTimeList);
-      formData.append('userId', keyState.userId);
-      const post = await axios.post(REQUEST_URL + suffix, formData);
+      setTimeout(() => {
+        const formData = new FormData();
+        console.log(formData);
+        formData.append('keyTimeList', keyState.keyTimeList);
+        formData.append('userId', keyState.userId);
 
-      keyDispatch({
-        type: 'REGISTER',
-      });
-
-      console.log(post);
-      console.log(keyState);
-
-      if (keyState.trainCount + 1 === 5) {
-        keyDispatch({
-          type: 'SUBMIT',
+        axios.post(REQUEST_URL + suffix, formData).then((response) => {
+          console.log(response);
         });
-        onSubmit();
-      }
+
+        keyDispatch({
+          type: 'REGISTER',
+        });
+
+        console.log(keyState);
+        if (keyState.trainCount + 1 === 5) {
+          keyDispatch({
+            type: 'SUBMIT',
+          });
+          onSubmit();
+        }
+      }, 500);
+      e.target.reset();
+      keyState.inputRef.current.setLastKeyDown(0);
+      keyState.inputRef.current.setLastKeyUp(0);
     },
-    [keyState, onSubmit, formType]
+    [keyState, onSubmit, keyDispatch, suffix]
   );
   return (
     <div>
