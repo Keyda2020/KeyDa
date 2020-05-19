@@ -1,7 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  memo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import _ from 'lodash';
 
-import { useKeyStateDispatch } from '../Context';
+import { useKeyStateState, useKeyStateDispatch } from '../Context';
 
 const Input = (props) => {
   const { type, onChange, value, ...rest } = props;
@@ -24,6 +31,17 @@ const Input = (props) => {
   ];
 
   const keyDispatch = useKeyStateDispatch();
+  const keyState = useKeyStateState();
+  const inputRef = useRef();
+
+  useImperativeHandle(inputRef, () => ({
+    setLastKeyDown: (value) => {
+      setLastKeyDown(value);
+    },
+    setLastKeyUp: (value) => {
+      setLastKeyUp(value);
+    },
+  }));
 
   const handleKeydown = useCallback(
     (e) => {
@@ -48,6 +66,12 @@ const Input = (props) => {
 
   const handleKeyUp = useCallback(
     (e) => {
+      if (_.isEqual(keyState.inputRef, {})) {
+        keyDispatch({
+          type: 'SET_REF',
+          inputRef: inputRef,
+        });
+      }
       if (e.key === 'Backspace') {
         keyDispatch({
           type: 'BACKSPACE',
@@ -68,7 +92,7 @@ const Input = (props) => {
         setLastKeyUp(timeStamp);
       }
     },
-    [keyDispatch, lastKeyDown, lastKeyUp, filteredKey]
+    [keyDispatch, lastKeyDown, lastKeyUp, filteredKey, keyState.inputRef]
   );
   const handleUserId = useCallback(
     (e) => {
@@ -82,6 +106,7 @@ const Input = (props) => {
       {type === 'password' ? (
         <input
           type="password"
+          ref={inputRef}
           onChange={onChange}
           onKeyDown={handleKeydown}
           onKeyUp={handleKeyUp}
@@ -99,4 +124,4 @@ const Input = (props) => {
   );
 };
 
-export default React.memo(Input);
+export default memo(forwardRef(Input));
