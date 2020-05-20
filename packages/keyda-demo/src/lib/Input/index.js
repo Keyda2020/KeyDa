@@ -10,7 +10,7 @@ import _ from 'lodash';
 
 import { useKeyStateState, useKeyStateDispatch } from '../Context';
 
-const Input = (props) => {
+const Input = forwardRef((props, ref) => {
   const { type, onChange, value, ...rest } = props;
   const [lastKeyDown, setLastKeyDown] = useState(0);
   const [lastKeyUp, setLastKeyUp] = useState(0);
@@ -122,6 +122,6 @@ const Input = (props) => {
       )}
     </React.Fragment>
   );
-};
+});
 
-export default memo(forwardRef(Input));
+export default memo(Input);
