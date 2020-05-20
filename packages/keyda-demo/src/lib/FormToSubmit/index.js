@@ -27,16 +27,17 @@ const FormToSubmit = (props) => {
   const handleSubmit = useCallback(
     (e) => {
       e.preventDefault();
-      setTimeout(() => {
-        const formData = new FormData();
-        console.log(formData);
-        formData.append('keyTimeList', keyState.keyTimeList);
-        formData.append('userId', keyState.userId);
+      (async () => {
+        const dataToSubmit = {
+          keyTimeList: keyState.keyTimeList,
+          userId: keyState.userId,
+        };
+        console.log(dataToSubmit);
+        const request = await axios
+          .post(REQUEST_URL + suffix, dataToSubmit)
+          .then((response) => response);
 
-        axios.post(REQUEST_URL + suffix, formData).then((response) => {
-          console.log(response);
-        });
-
+        console.log(request);
         keyDispatch({
           type: 'REGISTER',
         });
@@ -48,7 +49,7 @@ const FormToSubmit = (props) => {
           });
           onSubmit();
         }
-      }, 500);
+      })(); // Immediately invoked function expression
       e.target.reset();
       keyState.inputRef.current.setLastKeyDown(0);
       keyState.inputRef.current.setLastKeyUp(0);
