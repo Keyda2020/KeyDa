@@ -12,6 +12,12 @@
 # production
 /build
 
+# user data
+/src/db
+
+# config
+/src/config/develop.js
+
 # misc
 .DS_Store
 .env.local
