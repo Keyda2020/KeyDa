@@ -9,21 +9,13 @@ const {
   initializeCSV,
   fixDataToRow,
 } = require('../utils/JSUtility');
-const options = {
-  mode: 'text',
-  pythonPath: '',
-  pythonOptions: ['-u'],
-  scriptPath: '',
-  args: [],
-};
-
 const router = express.Router();
 
 const MAX_TRAIN_COUNT = 5;
 const MODEL_PATH = `${config.SRC_PATH}/models/temp.py`;
 const DB_PATH = `${config.SRC_PATH}/db/`;
 
-router.post('/register', async (req, res) => {
+router.post('/register', (req, res) => {
   const keyTimeList = req.body.keyTimeList;
   const userId = req.body.userId;
   const trainCount = req.body.trainCount;
@@ -116,6 +108,13 @@ router.post('/register', async (req, res) => {
   } else {
     // generate a csv file named userId at the directory
     // return and send with status
+    const rows = fixDataToRow(keyTimeList);
+    const stream = fs.createWriteStream(USER_DATA_PATH, { flags: 'a' });
+    writeToStream(stream, rows, {
+      includeEndRowDelimiter: true,
+      writeHeaders: false,
+    });
+
     return res.status(200).send({
       success: true,
       error: false,
@@ -125,14 +124,30 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', (req, res) => {
-  console.log(req);
-  // const resultFromModel = await new Promise((resolve, reject) => {
-  //   PythonShell.run(MODEL_PATH, null, (err, results) => {
-  //     if (err) return reject(err);
-  //     return resolve(results);
-  //   });
-  // });
+router.post('/login', async (req, res) => {
+  const keyTimeList = req.body.keyTimeList;
+  const userId = req.body.userId;
+  const trainCount = req.body.trainCount;
+  const reqOrigin = req.headers.origin;
+
+  const ORIGIN_DIR_PATH = DB_PATH + getDomainFromUrl(reqOrigin);
+  const USER_DATA_PATH = `${ORIGIN_DIR_PATH}/${userId}.csv`;
+
+  const options = {
+    mode: 'text',
+    pythonPath: '',
+    pythonOptions: ['-u'],
+    scriptPath: '',
+    args: [USER_DATA_PATH],
+  };
+
+  const accuracyResult = await new Promise((resolve, reject) => {
+    PythonShell.run(MODEL_PATH, options, (err, results) => {
+      if (err) return reject(err);
+      return resolve(results);
+    });
+  })[0];
+
   return res.status(200).send({
     success: true,
   });
