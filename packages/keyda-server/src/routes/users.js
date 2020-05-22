@@ -141,23 +141,29 @@ router.post('/login', async (req, res) => {
     args: [USER_DATA_PATH],
   };
 
-  const accuracyResult = await new Promise((resolve, reject) => {
+  const resultFromModel = await new Promise((resolve, reject) => {
     PythonShell.run(MODEL_PATH, options, (err, results) => {
+      console.log(results);
       if (err) return reject(err);
       return resolve(results);
     });
-  })[0];
-
-  return res.status(200).send({
-    success: true,
   });
-});
-
-router.post('/change_pw', (req, res) => {
-  console.log(req);
-  return res.status(200).send({
-    success: true,
-  });
+  const accuracyResult = parseFloat(resultFromModel[0]);
+  if (accuracyResult > 70) {
+    return res.status(200).send({
+      success: true,
+      error: false,
+      accuracy: accuracyResult,
+      message: 'Your typing pattern is correct',
+    });
+  } else {
+    return res.status(202).send({
+      success: false,
+      error: true,
+      accuracy: accuracyResult,
+      message: 'Your typing pattern is not correct',
+    });
+  }
 });
 
 module.exports = router;

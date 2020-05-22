@@ -1,5 +1,7 @@
-def hello_world(val):
-    print('hello world!')
+import sys
+
+
+def return_number(val):
     if(val == 5):
         return 100
     else:
@@ -7,4 +9,9 @@ def hello_world(val):
 
 
 if __name__ == "__main__":
-    print(hello_world(10))
+    return_number(5)
+    path = sys.argv[0]
+    if type(path) is str:
+        print(87.2128)
+    else:
+        print(45.1952)
