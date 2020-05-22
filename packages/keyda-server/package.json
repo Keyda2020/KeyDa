@@ -26,7 +26,9 @@
     "dotenv": "^8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
-    "moment": "^2.25.3"
+    "fast-csv": "^4.2.0",
+    "moment": "^2.25.3",
+    "python-shell": "^2.0.1"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
