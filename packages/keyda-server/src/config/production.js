@@ -1,3 +1,3 @@
 module.exports = {
-  MODEL_PATH: process.env.MODEL_PATH,
+  SRC_PATH: process.env.SRC_PATH,
 };
