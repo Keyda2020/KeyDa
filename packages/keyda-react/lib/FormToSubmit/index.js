@@ -28,9 +28,11 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        console.log(keyState);
         const dataToSubmit = {
           keyTimeList: keyState.keyTimeList,
           userId: keyState.userId,
+          trainCount: keyState.trainCount,
         };
         console.log(dataToSubmit);
         const request = await axios
