@@ -5,16 +5,16 @@ import axios from 'axios';
 import { useKeyStateState, useKeyStateDispatch } from '../Context';
 
 const FormToSubmit = (props) => {
-  const definedFormTypes = ['REGISTER', 'LOGIN', 'CHANGE_PW'];
+  const definedFormTypes = ['REGISTER', 'LOGIN'];
   const { onSubmit, formType, children, ...rest } = props;
 
   if (!formType) {
     throw new Error(
-      'You should pass the "formType" prop explicitly to define a mechanism of KeyDa form.\nYou can choose one of "REGISTER", "LOGIN", "CHANGE_PW" matched with your usage.'
+      'You should pass the "formType" prop explicitly to define a mechanism of KeyDa form.\nYou can choose one of "REGISTER", "LOGIN" matched with your usage.'
     );
   } else if (!_.includes(definedFormTypes, formType)) {
     throw new Error(
-      'You passed wrong "formType". You can choose one of "REGISTER", "LOGIN", "CHANGE_PW" matched with your usage.'
+      'You passed wrong "formType". You can choose one of "REGISTER", "LOGIN" matched to your usage.'
     );
   }
 
@@ -24,11 +24,10 @@ const FormToSubmit = (props) => {
   const keyState = useKeyStateState();
   const keyDispatch = useKeyStateDispatch();
 
-  const handleSubmit = useCallback(
+  const registerSubmit = useCallback(
     (e) => {
       e.preventDefault();
       (async () => {
-        console.log(keyState);
         const dataToSubmit = {
           keyTimeList: keyState.keyTimeList,
           userId: keyState.userId,
@@ -39,13 +38,16 @@ const FormToSubmit = (props) => {
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
 
+        const responseCount = request.data.count;
+        const status = request.status;
         console.log(request);
         keyDispatch({
           type: 'REGISTER',
+          trainCount: responseCount,
         });
 
         console.log(keyState);
-        if (keyState.trainCount + 1 === 5) {
+        if (responseCount === 5 && status === 200) {
           keyDispatch({
             type: 'SUBMIT',
           });
@@ -58,6 +60,36 @@ const FormToSubmit = (props) => {
     },
     [keyState, onSubmit, keyDispatch, suffix]
   );
+
+  const loginSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      (async () => {
+        const dataToSubmit = {
+          keyTimeList: keyState.keyTimeList,
+          userId: keyState.userId,
+        };
+
+        const request = await axios
+          .post(REQUEST_URL + suffix, dataToSubmit)
+          .then((response) => response);
+
+        const status = request.status;
+        if (status === 200) {
+          keyDispatch({
+            type: 'SUBMIT',
+          });
+          onSubmit();
+        }
+      })();
+      e.target.reset();
+      keyState.inputRef.current.setLastKeyDown(0);
+      keyState.inputRef.current.setLastKeyUp(0);
+    },
+    [onSubmit, suffix, keyState, keyDispatch]
+  );
+
+  const handleSubmit = formType === 'REGISTER' ? registerSubmit : loginSubmit;
   return (
     <div>
       <form onSubmit={handleSubmit} {...rest}>

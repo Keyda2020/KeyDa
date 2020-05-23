@@ -50,7 +50,7 @@ const keyStateReducer = (state, action) => {
       return {
         keyTimeList: [],
         userId: '',
-        trainCount: trainCount < 5 ? trainCount + 1 : trainCount,
+        trainCount: action.trainCount,
         inputRef: inputRef,
       };
     case 'SUBMIT':
