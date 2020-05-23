@@ -1,8 +1,10 @@
 const express = require('express');
 const { PythonShell } = require('python-shell');
 const fs = require('fs');
-const config = require('../config');
 const { writeToStream } = require('fast-csv');
+const _ = require('lodash');
+
+const config = require('../config');
 const {
   getDomainFromUrl,
   checkDir,
@@ -21,7 +23,7 @@ router.post('/register', (req, res) => {
   const trainCount = req.body.trainCount;
   const reqOrigin = req.headers.origin;
 
-  if (keyTimeList === [] || userId === '') {
+  if (_.isEqual(keyTimeList, []) || userId === '') {
     return res.status(202).send({
       success: false,
       error: true,
