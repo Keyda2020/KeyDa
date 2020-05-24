@@ -80,7 +80,7 @@ export const KeyStateProvider = ({ children }) => {
   );
 };
 
-export const useKeyStateState = () => {
+export const useKeyStateContext = () => {
   const context = useContext(keyStateContext);
   if (!context) {
     throw new Error('Cannot find keyStateProvider');
