@@ -1,14 +1,13 @@
 import React, { useCallback } from 'react';
-import { Form, Input } from './lib';
+import { Form, Input, Button } from './lib';
 
 const LoginForm = (props) => {
   console.log(props);
-  console.log(Form);
-  console.log(Input);
-  const handleSubmit = useCallback(
-    () => console.log('Successfully submitted!'),
-    []
-  );
+  const handleSubmit = useCallback((e, accuracy) => {
+    // as written in FormToSubmit.js, developer should evince the second parameter.
+    console.log('Logged in Successfully!');
+    console.log(e, accuracy);
+  }, []);
   return (
     <div>
       <Form onSubmit={handleSubmit} formType="LOGIN">
@@ -16,7 +15,7 @@ const LoginForm = (props) => {
         <br />
         <Input type="password" onChange={(e) => e.target.value} />
         <br />
-        <button type="submit">SIGN UP!</button>
+        <Button register={false}>SIGN IN!</Button>
       </Form>
     </div>
   );
