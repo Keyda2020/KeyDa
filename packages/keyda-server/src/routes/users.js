@@ -13,7 +13,7 @@ const {
 } = require('../utils/JSUtility');
 const router = express.Router();
 
-const MAX_TRAIN_COUNT = 5;
+const MAX_TRAIN_COUNT = 10;
 const MODEL_PATH = `${config.SRC_PATH}/models/temp.py`;
 const DB_PATH = `${config.SRC_PATH}/db/`;
 
@@ -34,8 +34,8 @@ router.post('/register', (req, res) => {
 
   const ORIGIN_DIR_PATH = DB_PATH + getDomainFromUrl(reqOrigin);
   const USER_DATA_PATH = `${ORIGIN_DIR_PATH}/${userId}.csv`;
-  const isFirstRequest = trainCount == 0;
-  const isTypingTrainData = trainCount < MAX_TRAIN_COUNT - 1;
+  const isFirstRequest = trainCount == 1;
+  const isTypingTrainData = trainCount < MAX_TRAIN_COUNT;
 
   if (isFirstRequest) {
     // at first request, check there is dir and csv file, if not, make new one.
@@ -120,7 +120,7 @@ router.post('/register', (req, res) => {
     return res.status(200).send({
       success: true,
       error: false,
-      count: trainCount + 1,
+      count: trainCount,
       message: 'train completed',
     });
   }
