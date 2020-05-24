@@ -3,9 +3,9 @@ import { Form, Input, Button } from './lib';
 
 const RegisterForm = (props) => {
   console.log(props);
-  const handleSubmit = useCallback((...args) => {
+  const handleSubmit = useCallback((e) => {
     console.log('Registered Successfully!');
-    console.log(args);
+    console.log(e);
   }, []);
   return (
     <div>
