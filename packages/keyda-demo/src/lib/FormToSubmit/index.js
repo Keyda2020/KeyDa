@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
 const FormToSubmit = (props) => {
+  const MAX_TRAIN_COUNT = 10;
   const definedFormTypes = ['REGISTER', 'LOGIN'];
   const { onSubmit, formType, children, ...rest } = props;
 
@@ -52,15 +53,15 @@ const FormToSubmit = (props) => {
         });
 
         console.log(keyState);
-        if (responseCount === 5 && status === 200) {
+        if (responseCount === MAX_TRAIN_COUNT && status === 200) {
           keyDispatch({
             type: 'SUBMIT',
           });
           onSubmit(e);
         }
       })(); // Immediately invoked function expression
-      e.target.reset();
       if (keyState.inputRef.current) {
+        keyState.inputRef.current.setValueClear();
         keyState.inputRef.current.setLastKeyDown(0);
         keyState.inputRef.current.setLastKeyUp(0);
       }
