@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useKeyStateContext } from '../Context';
 
-const MAX_TRAIN_COUNT = 5;
+const MAX_TRAIN_COUNT = 10;
 
 const Button = (props) => {
   const { children, register, ...rest } = props;
@@ -20,7 +20,7 @@ const Button = (props) => {
 
   const givenText = children ? children : '';
   const countText = register
-    ? ` (${keyState.trainCount + 1} / ${MAX_TRAIN_COUNT})`
+    ? ` (${keyState.trainCount} / ${MAX_TRAIN_COUNT})`
     : '';
   return (
     <button type="submit" {...rest}>

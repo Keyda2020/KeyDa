@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 const initialKeyState = {
   keyTimeList: [],
   userId: '',
-  trainCount: 0,
+  trainCount: 1,
   inputRef: {},
 };
 
@@ -11,7 +11,6 @@ const keyStateReducer = (state, action) => {
   const { keyTimeList, userId, trainCount, inputRef } = state;
   switch (action.type) {
     case 'SET_REF':
-      console.log(state, action);
       return {
         keyTimeList: keyTimeList,
         userId: userId,
@@ -49,7 +48,7 @@ const keyStateReducer = (state, action) => {
     case 'REGISTER':
       return {
         keyTimeList: [],
-        userId: '',
+        userId: userId,
         trainCount: action.trainCount,
         inputRef: inputRef,
       };
@@ -57,7 +56,7 @@ const keyStateReducer = (state, action) => {
       return {
         keyTimeList: [],
         userId: '',
-        trainCount: 0,
+        trainCount: 1,
         inputRef: {},
       };
     default:
