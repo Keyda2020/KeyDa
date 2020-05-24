@@ -1,14 +1,12 @@
 import React, { useCallback } from 'react';
-import { Form, Input } from './lib';
+import { Form, Input, Button } from './lib';
 
 const RegisterForm = (props) => {
   console.log(props);
-  console.log(Form);
-  console.log(Input);
-  const handleSubmit = useCallback(
-    () => console.log('Successfully submitted!'),
-    []
-  );
+  const handleSubmit = useCallback((e) => {
+    console.log('Registered Successfully!');
+    console.log(e);
+  }, []);
   return (
     <div>
       <Form onSubmit={handleSubmit} formType="REGISTER">
@@ -16,7 +14,7 @@ const RegisterForm = (props) => {
         <br />
         <Input type="password" onChange={(e) => e.target.value} />
         <br />
-        <button type="submit">SIGN UP!</button>
+        <Button register={true}>SIGN UP!</Button>
       </Form>
     </div>
   );

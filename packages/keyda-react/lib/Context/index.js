@@ -50,7 +50,7 @@ const keyStateReducer = (state, action) => {
       return {
         keyTimeList: [],
         userId: '',
-        trainCount: trainCount < 5 ? trainCount + 1 : trainCount,
+        trainCount: action.trainCount,
         inputRef: inputRef,
       };
     case 'SUBMIT':
@@ -80,7 +80,7 @@ export const KeyStateProvider = ({ children }) => {
   );
 };
 
-export const useKeyStateState = () => {
+export const useKeyStateContext = () => {
   const context = useContext(keyStateContext);
   if (!context) {
     throw new Error('Cannot find keyStateProvider');

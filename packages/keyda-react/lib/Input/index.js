@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import _ from 'lodash';
 
-import { useKeyStateState, useKeyStateDispatch } from '../Context';
+import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
 const Input = forwardRef((props, ref) => {
   const { type, onChange, value, ...rest } = props;
@@ -31,7 +31,7 @@ const Input = forwardRef((props, ref) => {
   ];
 
   const keyDispatch = useKeyStateDispatch();
-  const keyState = useKeyStateState();
+  const keyState = useKeyStateContext();
   const inputRef = useRef();
 
   useImperativeHandle(inputRef, () => ({
@@ -47,8 +47,6 @@ const Input = forwardRef((props, ref) => {
     (e) => {
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        // console.log(lastKeyDown, lastKeyUp);
-        // console.log('down', timeStamp);
         if (lastKeyDown === 0) setLastKeyDown(timeStamp);
         if (lastKeyDown > 0 && lastKeyUp > 0) {
           const newKeyTimeDD = timeStamp - lastKeyDown;
@@ -82,8 +80,6 @@ const Input = forwardRef((props, ref) => {
       }
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        // console.log(lastKeyDown, lastKeyUp);
-        // console.log('up', timeStamp);
         if (lastKeyUp === 0) setLastKeyUp(timeStamp);
         if (lastKeyDown > 0) {
           const newKeyTimeDU = timeStamp - lastKeyDown;
