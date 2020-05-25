@@ -7,7 +7,6 @@ const _ = require('lodash');
 const config = require('../config');
 const {
   getDomainFromUrl,
-  checkDir,
   initializeCSV,
   fixDataToRow,
 } = require('../utils/JSUtility');
@@ -35,31 +34,25 @@ router.post('/register', (req, res) => {
   const ORIGIN_DIR_PATH = DB_PATH + getDomainFromUrl(reqOrigin);
   const USER_DATA_PATH = `${ORIGIN_DIR_PATH}/${userId}.csv`;
   const isFirstRequest = trainCount == 1;
-  const isTypingTrainData = trainCount < MAX_TRAIN_COUNT;
+  const isTypingTrainData = trainCount <= MAX_TRAIN_COUNT;
+  const isFinalData = trainCount === MAX_TRAIN_COUNT;
 
   if (isFirstRequest) {
     // at first request, check there is dir and csv file, if not, make new one.
-    checkDir(ORIGIN_DIR_PATH, (err, isTrue) => {
-      if (err) return console.log(err);
-      if (!isTrue) {
-        console.log('There is a directory already that has a same name');
-      } else {
-        fs.mkdir(ORIGIN_DIR_PATH, (err) => {
-          if (err) console.log(err);
-          console.log('Directory generated successfully.');
-        });
-      }
+    fs.mkdirSync(ORIGIN_DIR_PATH, { recursive: true }, (err) => {
+      if (err) console.log(err);
+      console.log('Directory generated successfully.');
     });
 
     const dataFrame = initializeCSV(keyTimeList.length);
     dataFrame.push(keyTimeList);
-    const isFileExist = fs.exists(USER_DATA_PATH, (exist) =>
-      console.log(
-        exist
-          ? 'The file is already exists.'
-          : 'New user data file is created.',
-      ),
-    );
+    const isFileExist = fs.existsSync(USER_DATA_PATH, (exist) => exist);
+
+    console.log(isFileExist);
+
+    const fileMessage = isFileExist
+      ? 'The file of user data is already exists.'
+      : 'New user data file is created.';
 
     if (!isFileExist) {
       const stream = fs.createWriteStream(USER_DATA_PATH);
@@ -67,31 +60,53 @@ router.post('/register', (req, res) => {
         headers: true,
         includeEndRowDelimiter: true,
       });
+    } else {
+      const row = fixDataToRow(keyTimeList);
+      const stream = fs.createWriteStream(USER_DATA_PATH, { flags: 'a' });
+      writeToStream(stream, row, {
+        includeEndRowDelimiter: true,
+        writeHeaders: false,
+      });
     }
+
+    const responseCount = trainCount + 1;
+
+    req.app.locals[userId] = {
+      onTraining: true,
+      trainCount: responseCount,
+      keyTimeList: keyTimeList,
+    };
 
     return res.status(202).send({
       success: true,
       error: false,
-      count: trainCount + 1,
+      count: responseCount,
+      message: fileMessage,
     });
   } else if (isTypingTrainData) {
-    let columnLength = 0; // Read current size of the Data.
-    let rowLength = 0;
-    fs.readFile(USER_DATA_PATH, 'utf8', function (err, data) {
-      if (err) console.log(err);
-      const allRows = data.split(/\r?\n/);
-      rowLength = allRows.length - 1;
-      const row = allRows[0].split(',');
-      columnLength = row.length;
-    });
+    console.log(res.app.locals);
+    const isUserActive = res.app.locals[userId].onTraining;
+    const prevTrainCount = res.app.locals[userId].trainCount;
+    const prevKeyTimeList = res.app.locals[userId].keyTimeList;
 
-    const isUnfitData = keyTimeList.length < columnLength;
-    if (isUnfitData) {
+    const isSameDataLength = keyTimeList.length === prevKeyTimeList.length;
+    const isUserOnRightStep = isUserActive && prevTrainCount === trainCount;
+
+    if (!isSameDataLength) {
       return res.status(202).send({
         success: false,
         error: true,
         count: trainCount,
-        message: 'You are typed wrong, try again.',
+        message: 'You are typed wrong, please try again.',
+      });
+    }
+
+    if (!isUserOnRightStep) {
+      return res.status(202).send({
+        success: false,
+        error: true,
+        count: 1,
+        message: 'Something went wrong, please start over again.',
       });
     }
 
@@ -102,26 +117,28 @@ router.post('/register', (req, res) => {
       writeHeaders: false,
     });
 
+    if (isFinalData) {
+      return res.status(200).send({
+        success: true,
+        error: false,
+        count: trainCount,
+        message: `All of your data is received successfully. You are passed ${MAX_TRAIN_COUNT} step.`,
+      });
+    }
+
+    const responseCount = trainCount + 1;
+
+    res.app.locals[userId] = {
+      onTraining: isUserActive,
+      trainCount: responseCount,
+      keyTimeList: keyTimeList,
+    };
+
     return res.status(202).send({
       success: true,
       error: false,
-      count: trainCount + 1,
-    });
-  } else {
-    // generate a csv file named userId at the directory
-    // return and send with status
-    const rows = fixDataToRow(keyTimeList);
-    const stream = fs.createWriteStream(USER_DATA_PATH, { flags: 'a' });
-    writeToStream(stream, rows, {
-      includeEndRowDelimiter: true,
-      writeHeaders: false,
-    });
-
-    return res.status(200).send({
-      success: true,
-      error: false,
-      count: trainCount,
-      message: 'train completed',
+      count: responseCount,
+      message: `Your data is received successfully. You are now in step ${responseCount} of ${MAX_TRAIN_COUNT}.`,
     });
   }
 });
