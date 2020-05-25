@@ -34,7 +34,7 @@ router.post('/register', (req, res) => {
   const ORIGIN_DIR_PATH = DB_PATH + getDomainFromUrl(reqOrigin);
   const USER_DATA_PATH = `${ORIGIN_DIR_PATH}/${userId}.csv`;
   const isFirstRequest = trainCount == 1;
-  const isTypingTrainData = trainCount <= MAX_TRAIN_COUNT;
+  const isTypingTrainData = trainCount >= 2 && trainCount <= MAX_TRAIN_COUNT;
   const isFinalData = trainCount === MAX_TRAIN_COUNT;
 
   if (isFirstRequest) {
@@ -51,23 +51,17 @@ router.post('/register', (req, res) => {
     console.log(isFileExist);
 
     const fileMessage = isFileExist
-      ? 'The file of user data is already exists.'
+      ? "Because the file of user data is already exists, it's initialized again."
       : 'New user data file is created.';
 
-    if (!isFileExist) {
-      const stream = fs.createWriteStream(USER_DATA_PATH);
-      writeToStream(stream, dataFrame, {
-        headers: true,
-        includeEndRowDelimiter: true,
-      });
-    } else {
-      const row = fixDataToRow(keyTimeList);
-      const stream = fs.createWriteStream(USER_DATA_PATH, { flags: 'a' });
-      writeToStream(stream, row, {
-        includeEndRowDelimiter: true,
-        writeHeaders: false,
-      });
+    if (isFileExist) {
+      fs.unlinkSync(USER_DATA_PATH);
     }
+    const stream = fs.createWriteStream(USER_DATA_PATH);
+    writeToStream(stream, dataFrame, {
+      headers: true,
+      includeEndRowDelimiter: true,
+    });
 
     const responseCount = trainCount + 1;
 
@@ -84,7 +78,6 @@ router.post('/register', (req, res) => {
       message: fileMessage,
     });
   } else if (isTypingTrainData) {
-    console.log(res.app.locals);
     const isUserActive = res.app.locals[userId].onTraining;
     const prevTrainCount = res.app.locals[userId].trainCount;
     const prevKeyTimeList = res.app.locals[userId].keyTimeList;
