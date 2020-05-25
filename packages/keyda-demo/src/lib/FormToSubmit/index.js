@@ -65,6 +65,9 @@ const FormToSubmit = (props) => {
         keyState.inputRef.current.setLastKeyDown(0);
         keyState.inputRef.current.setLastKeyUp(0);
       }
+      if (keyState.trainCount === MAX_TRAIN_COUNT) {
+        e.target.reset();
+      }
     },
     [keyState, onSubmit, keyDispatch, suffix]
   );

@@ -1,18 +1,7 @@
-const fs = require('fs');
-
 module.exports = {
   getDomainFromUrl(url) {
     const regex = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)/;
     return regex.exec(url)[1];
-  },
-
-  checkDir(path, callback) {
-    fs.stat(path, (err, stats) => {
-      if (err && err.code === 'ENOENT') return callback(null, true);
-      if (err) return callback(err);
-
-      return callback(null, !stats.isDirectory());
-    });
   },
 
   initializeCSV(length) {
