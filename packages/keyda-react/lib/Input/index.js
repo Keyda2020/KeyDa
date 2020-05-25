@@ -1,16 +1,9 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  memo,
-  forwardRef,
-  useImperativeHandle,
-} from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import _ from 'lodash';
 
 import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
-const Input = forwardRef((props, ref) => {
+const Input = (props) => {
   const { type, onChange, value, ...rest } = props;
   const [lastKeyDown, setLastKeyDown] = useState(0);
   const [lastKeyUp, setLastKeyUp] = useState(0);
@@ -34,15 +27,6 @@ const Input = forwardRef((props, ref) => {
   const keyState = useKeyStateContext();
   const inputRef = useRef();
 
-  useImperativeHandle(inputRef, () => ({
-    setLastKeyDown: (value) => {
-      setLastKeyDown(value);
-    },
-    setLastKeyUp: (value) => {
-      setLastKeyUp(value);
-    },
-  }));
-
   const handleKeydown = useCallback(
     (e) => {
       if (!_.includes(filteredKey, e.key)) {
@@ -65,6 +49,15 @@ const Input = forwardRef((props, ref) => {
   const handleKeyUp = useCallback(
     (e) => {
       if (_.isEqual(keyState.inputRef, {})) {
+        inputRef.current.setLastKeyDown = (value) => {
+          setLastKeyDown(value);
+        };
+        inputRef.current.setLastKeyUp = (value) => {
+          setLastKeyUp(value);
+        };
+        inputRef.current.setValueClear = () => {
+          inputRef.current.value = '';
+        };
         keyDispatch({
           type: 'SET_REF',
           inputRef: inputRef,
@@ -118,6 +111,6 @@ const Input = forwardRef((props, ref) => {
       )}
     </React.Fragment>
   );
-});
+};
 
-export default memo(Input);
+export default React.memo(Input);
