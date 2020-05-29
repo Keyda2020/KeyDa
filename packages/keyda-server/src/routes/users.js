@@ -13,7 +13,7 @@ const {
 const router = express.Router();
 
 const MAX_TRAIN_COUNT = 10;
-const MODEL_PATH = `${config.SRC_PATH}/models/gmm.py`;
+const MODEL_PATH = `${config.SRC_PATH}/models/gmm_modified.py`;
 const DB_PATH = `${config.SRC_PATH}/db/`;
 
 router.post('/register', (req, res) => {
