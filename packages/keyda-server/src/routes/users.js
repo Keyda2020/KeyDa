@@ -13,7 +13,7 @@ const {
 const router = express.Router();
 
 const MAX_TRAIN_COUNT = 10;
-const MODEL_PATH = `${config.SRC_PATH}/models/temp.py`;
+const MODEL_PATH = `${config.SRC_PATH}/models/gmm.py`;
 const DB_PATH = `${config.SRC_PATH}/db/`;
 
 router.post('/register', (req, res) => {
@@ -71,7 +71,7 @@ router.post('/register', (req, res) => {
       keyTimeList: keyTimeList,
     };
 
-    return res.status(202).send({
+    return res.status(201).send({
       success: true,
       error: false,
       count: responseCount,
@@ -127,7 +127,7 @@ router.post('/register', (req, res) => {
       keyTimeList: keyTimeList,
     };
 
-    return res.status(202).send({
+    return res.status(201).send({
       success: true,
       error: false,
       count: responseCount,
@@ -139,18 +139,60 @@ router.post('/register', (req, res) => {
 router.post('/login', async (req, res) => {
   const keyTimeList = req.body.keyTimeList;
   const userId = req.body.userId;
-  const trainCount = req.body.trainCount;
   const reqOrigin = req.headers.origin;
+
+  if (_.isEqual(keyTimeList, []) || userId === '') {
+    return res.status(202).send({
+      success: false,
+      error: true,
+      message: 'You missed some input, try again.',
+    });
+  }
 
   const ORIGIN_DIR_PATH = DB_PATH + getDomainFromUrl(reqOrigin);
   const USER_DATA_PATH = `${ORIGIN_DIR_PATH}/${userId}.csv`;
+
+  const isFileExist = fs.existsSync(USER_DATA_PATH, (exist) => exist);
+  if (!isFileExist) {
+    return res.status(202).send({
+      success: false,
+      error: true,
+      message:
+        "Your data doesn't exist in a server. Please try again from the registration step.",
+    });
+  }
+
+  console.log(
+    fs.readFileSync(USER_DATA_PATH, 'utf-8').split(/\r?\n/)[0].split(','),
+  );
+  const dataLength = fs
+    .readFileSync(USER_DATA_PATH, 'utf-8')
+    .split(/\r?\n/)[0]
+    .split(',').length;
+
+  const isSameDataLength = keyTimeList.length === dataLength;
+
+  if (!isSameDataLength) {
+    return res.status(202).send({
+      success: false,
+      error: true,
+      message: 'You are typed wrong, please try again.',
+    });
+  }
+
+  const rows = fixDataToRow(keyTimeList);
+  const stream = fs.createWriteStream(USER_DATA_PATH, { flags: 'a' });
+  writeToStream(stream, rows, {
+    includeEndRowDelimiter: true,
+    writeHeaders: false,
+  });
 
   const options = {
     mode: 'text',
     pythonPath: '',
     pythonOptions: ['-u'],
     scriptPath: '',
-    args: [USER_DATA_PATH],
+    args: [USER_DATA_PATH], // argv[0] is the path of .py file itself
   };
 
   const resultFromModel = await new Promise((resolve, reject) => {

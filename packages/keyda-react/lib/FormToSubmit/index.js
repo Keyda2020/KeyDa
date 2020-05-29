@@ -84,13 +84,14 @@ const FormToSubmit = (props) => {
         const request = await axios
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
+        console.log(request);
 
         const status = request.status;
         const accuracy = request.data.accuracy;
+        keyDispatch({
+          type: 'SUBMIT',
+        });
         if (status === 200) {
-          keyDispatch({
-            type: 'SUBMIT',
-          });
           onSubmit(e, accuracy); // to transfer the accuracy score to developer, it's inevitable to write this way. So, it will be noticed to user developer.
         }
       })();
