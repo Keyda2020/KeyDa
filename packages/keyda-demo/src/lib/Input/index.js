@@ -5,8 +5,9 @@ import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
 const Input = (props) => {
   const { type, onChange, value, ...rest } = props;
-  const [lastKeyDown, setLastKeyDown] = useState(0);
-  const [lastKeyUp, setLastKeyUp] = useState(0);
+  // const [lastKeyDown, setLastKeyDown] = useState(0);
+  // const [lastKeyUp, setLastKeyUp] = useState(0);
+  const isPasswordInput = type === 'password';
 
   const filteredKey = [
     'Enter',
@@ -31,30 +32,37 @@ const Input = (props) => {
     (e) => {
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        if (lastKeyDown === 0) setLastKeyDown(timeStamp);
-        if (lastKeyDown > 0 && lastKeyUp > 0) {
-          const newKeyTimeDD = timeStamp - lastKeyDown;
-          const newKeyTimeUD = timeStamp - lastKeyUp;
-          keyDispatch({
-            type: 'KEY_DOWN',
-            newKeyTime: [newKeyTimeDD, newKeyTimeUD],
-          });
-        }
-        setLastKeyDown(timeStamp);
+        // if (lastKeyDown === 0) {
+        //   setLastKeyDown(timeStamp);
+        //   keyDispatch({
+        //     type: 'FIRST_KEY_DOWN',
+        //     downList: timeStamp,
+        //   });
+        // }
+        // if (lastKeyDown > 0 && lastKeyUp > 0) {
+        //   const newKeyTimeDD = timeStamp - lastKeyDown;
+        //   const newKeyTimeUD = timeStamp - lastKeyUp;
+        //   keyDispatch({
+        //     type: 'KEY_DOWN',
+        //     newKeyTime: [newKeyTimeDD, newKeyTimeUD],
+        //     downList: timeStamp,
+        //   });
+        // }
+        // setLastKeyDown(timeStamp);
       }
     },
-    [keyDispatch, lastKeyDown, lastKeyUp, filteredKey]
+    [keyDispatch, filteredKey]
   );
 
   const handleKeyUp = useCallback(
     (e) => {
       if (_.isEqual(keyState.inputRef, {})) {
-        inputRef.current.setLastKeyDown = (value) => {
-          setLastKeyDown(value);
-        };
-        inputRef.current.setLastKeyUp = (value) => {
-          setLastKeyUp(value);
-        };
+        // inputRef.current.setLastKeyDown = (value) => {
+        //   setLastKeyDown(value);
+        // };
+        // inputRef.current.setLastKeyUp = (value) => {
+        //   setLastKeyUp(value);
+        // };
         inputRef.current.setValueClear = () => {
           inputRef.current.value = '';
         };
@@ -68,20 +76,24 @@ const Input = (props) => {
           type: 'BACKSPACE',
         });
         e.target.value = '';
-        setLastKeyDown(0);
-        setLastKeyUp(0);
+        // setLastKeyDown(0);
+        // setLastKeyUp(0);
       }
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        if (lastKeyUp === 0) setLastKeyUp(timeStamp);
-        if (lastKeyDown > 0) {
-          const newKeyTimeDU = timeStamp - lastKeyDown;
-          keyDispatch({ type: 'KEY_UP', newKeyTime: [newKeyTimeDU] });
-        }
-        setLastKeyUp(timeStamp);
+        // if (lastKeyUp === 0) setLastKeyUp(timeStamp);
+        // if (lastKeyDown > 0) {
+        //   const newKeyTimeDU = timeStamp - lastKeyDown;
+        //   keyDispatch({
+        //     type: 'KEY_UP',
+        //     newKeyTime: [newKeyTimeDU],
+        //     upList: timeStamp,
+        //   });
+        // }
+        // setLastKeyUp(timeStamp);
       }
     },
-    [keyDispatch, lastKeyDown, lastKeyUp, filteredKey, keyState.inputRef]
+    [keyDispatch, filteredKey, keyState.inputRef]
   );
   const handleUserId = useCallback(
     (e) => {
@@ -92,7 +104,7 @@ const Input = (props) => {
 
   return (
     <React.Fragment>
-      {type === 'password' ? (
+      {isPasswordInput ? (
         <input
           type="password"
           ref={inputRef}

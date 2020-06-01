@@ -4,6 +4,23 @@ import axios from 'axios';
 
 import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
+const keyTypePatternComputation = (keyUpList, keyDownList) => {
+  const computeList = [];
+
+  for (let i = 0; i < keyDownList.length; i++) {
+    if (i === 0) {
+      computeList.push(((keyUpList[i] - keyDownList[i]) / 1000).toFixed(4));
+    } else {
+      computeList.push(
+        ((keyDownList[i] - keyDownList[i - 1]) / 1000).toFixed(4)
+      );
+      computeList.push(((keyDownList[i] - keyUpList[i - 1]) / 1000).toFixed(4));
+      computeList.push(((keyUpList[i] - keyDownList[i]) / 1000).toFixed(4));
+    }
+  }
+  return computeList;
+};
+
 const FormToSubmit = (props) => {
   const MAX_TRAIN_COUNT = 10;
   const definedFormTypes = ['REGISTER', 'LOGIN'];
@@ -29,8 +46,13 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        const keyDownList = keyState.keyDownList;
+        const keyUpList = keyState.keyUpList;
+
+        const keyTimeList = keyTypePatternComputation(keyUpList, keyDownList);
+
         const dataToSubmit = {
-          keyTimeList: keyState.keyTimeList,
+          keyTimeList: keyTimeList,
           userId: keyState.userId,
           trainCount: keyState.trainCount,
         };
@@ -76,8 +98,13 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        const keyDownList = keyState.keyDownList;
+        const keyUpList = keyState.keyUpList;
+
+        const keyTimeList = keyTypePatternComputation(keyUpList, keyDownList);
+
         const dataToSubmit = {
-          keyTimeList: keyState.keyTimeList,
+          keyTimeList: keyTimeList,
           userId: keyState.userId,
         };
 
