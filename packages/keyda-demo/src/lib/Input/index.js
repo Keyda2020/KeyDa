@@ -1,12 +1,10 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import _ from 'lodash';
 
 import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
 const Input = (props) => {
   const { type, onChange, value, ...rest } = props;
-  // const [lastKeyDown, setLastKeyDown] = useState(0);
-  // const [lastKeyUp, setLastKeyUp] = useState(0);
   const isPasswordInput = type === 'password';
 
   const filteredKey = [
@@ -30,39 +28,31 @@ const Input = (props) => {
 
   const handleKeydown = useCallback(
     (e) => {
+      const isNotClearAtStart =
+        e.target.value === '' &&
+        (!_.isEqual(keyState.keyDownList, []) ||
+          !_.isEqual(keyState.keyUpList, []));
+      if (isNotClearAtStart) {
+        keyDispatch({
+          type: 'CLEAR_PW',
+        });
+      }
+
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        // if (lastKeyDown === 0) {
-        //   setLastKeyDown(timeStamp);
-        //   keyDispatch({
-        //     type: 'FIRST_KEY_DOWN',
-        //     downList: timeStamp,
-        //   });
-        // }
-        // if (lastKeyDown > 0 && lastKeyUp > 0) {
-        //   const newKeyTimeDD = timeStamp - lastKeyDown;
-        //   const newKeyTimeUD = timeStamp - lastKeyUp;
-        //   keyDispatch({
-        //     type: 'KEY_DOWN',
-        //     newKeyTime: [newKeyTimeDD, newKeyTimeUD],
-        //     downList: timeStamp,
-        //   });
-        // }
-        // setLastKeyDown(timeStamp);
+
+        keyDispatch({
+          type: 'KEY_DOWN',
+          keyDownList: timeStamp,
+        });
       }
     },
-    [keyDispatch, filteredKey]
+    [keyDispatch, filteredKey, keyState.keyDownList, keyState.keyUpList]
   );
 
   const handleKeyUp = useCallback(
     (e) => {
       if (_.isEqual(keyState.inputRef, {})) {
-        // inputRef.current.setLastKeyDown = (value) => {
-        //   setLastKeyDown(value);
-        // };
-        // inputRef.current.setLastKeyUp = (value) => {
-        //   setLastKeyUp(value);
-        // };
         inputRef.current.setValueClear = () => {
           inputRef.current.value = '';
         };
@@ -75,22 +65,13 @@ const Input = (props) => {
         keyDispatch({
           type: 'BACKSPACE',
         });
-        e.target.value = '';
-        // setLastKeyDown(0);
-        // setLastKeyUp(0);
       }
       if (!_.includes(filteredKey, e.key)) {
         const timeStamp = e.timeStamp;
-        // if (lastKeyUp === 0) setLastKeyUp(timeStamp);
-        // if (lastKeyDown > 0) {
-        //   const newKeyTimeDU = timeStamp - lastKeyDown;
-        //   keyDispatch({
-        //     type: 'KEY_UP',
-        //     newKeyTime: [newKeyTimeDU],
-        //     upList: timeStamp,
-        //   });
-        // }
-        // setLastKeyUp(timeStamp);
+        keyDispatch({
+          type: 'KEY_UP',
+          keyUpList: timeStamp,
+        });
       }
     },
     [keyDispatch, filteredKey, keyState.inputRef]

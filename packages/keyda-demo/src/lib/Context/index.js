@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
 const initialKeyState = {
-  // keyTimeList: [],
   userId: '',
   trainCount: 1,
   inputRef: {},
@@ -12,18 +11,16 @@ const initialKeyState = {
 const keyStateReducer = (state, action) => {
   const { userId, trainCount, inputRef, keyUpList, keyDownList } = state;
   switch (action.type) {
-    // case 'FIRST_KEY_DOWN':
-    //   return {
-    //     keyTimeList: keyTimeList,
-    //     userId: userId,
-    //     trainCount: trainCount,
-    //     inputRef: inputRef,
-    //     keyDownList: [...keyDownList, action.keyDownList],
-    //     keyUpList: keyUpList,
-    //   };
+    case 'CLEAR_PW':
+      return {
+        userId: userId,
+        trainCount: trainCount,
+        inputRef: inputRef,
+        keyDownList: [],
+        keyUpList: [],
+      };
     case 'SET_REF':
       return {
-        // keyTimeList: keyTimeList,
         userId: userId,
         trainCount: trainCount,
         inputRef: action.inputRef,
@@ -32,7 +29,6 @@ const keyStateReducer = (state, action) => {
       };
     case 'KEY_DOWN':
       return {
-        // keyTimeList: [...keyTimeList, ...action.newKeyTime],
         userId: userId,
         trainCount: trainCount,
         inputRef: inputRef,
@@ -41,7 +37,6 @@ const keyStateReducer = (state, action) => {
       };
     case 'KEY_UP':
       return {
-        // keyTimeList: [...keyTimeList, ...action.newKeyTime],
         userId: userId,
         trainCount: trainCount,
         inputRef: inputRef,
@@ -50,7 +45,6 @@ const keyStateReducer = (state, action) => {
       };
     case 'TYPE_USER_ID':
       return {
-        // keyTimeList: keyTimeList,
         userId: userId === action.userId ? userId : action.userId,
         trainCount: trainCount,
         inputRef: inputRef,
@@ -58,17 +52,22 @@ const keyStateReducer = (state, action) => {
         keyUpList: keyUpList,
       };
     case 'BACKSPACE':
+      let keyDownDeleted = keyDownList.slice(0, keyDownList.length - 1);
+      let keyUpDeleted = keyUpList.slice(0, keyUpList.length - 1);
+      const isInputCleared = inputRef.current.value === '';
+      if (isInputCleared) {
+        keyDownDeleted = [];
+        keyUpDeleted = [];
+      }
       return {
-        // keyTimeList: [],
         userId: userId,
         trainCount: trainCount,
         inputRef: inputRef,
-        keyDownList: [],
-        keyUpList: [],
+        keyDownList: keyDownDeleted,
+        keyUpList: keyUpDeleted,
       };
     case 'REGISTER':
       return {
-        // keyTimeList: [],
         userId: userId,
         trainCount: action.trainCount,
         inputRef: inputRef,
@@ -77,10 +76,17 @@ const keyStateReducer = (state, action) => {
       };
     case 'SUBMIT':
       return {
-        // keyTimeList: [],
         userId: '',
         trainCount: 1,
         inputRef: {},
+        keyDownList: [],
+        keyUpList: [],
+      };
+    case 'WRONG_TYPING':
+      return {
+        userId: userId,
+        trainCount: trainCount,
+        inputRef: inputRef,
         keyDownList: [],
         keyUpList: [],
       };
