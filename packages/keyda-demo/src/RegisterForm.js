@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
+
 import { Form, Input, Button } from './lib';
 
 const RegisterForm = (props) => {
   console.log(props);
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback((e, res) => {
     console.log('Registered Successfully!');
-    console.log(e);
+    console.log(e, res);
   }, []);
   return (
     <div>

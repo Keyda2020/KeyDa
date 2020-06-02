@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react';
+
 import { Form, Input, Button } from './lib';
 
 const LoginForm = (props) => {
   console.log(props);
-  const handleSubmit = useCallback((e, accuracy) => {
+  const handleSubmit = useCallback((e, res) => {
     // as written in FormToSubmit.js, developer should evince the second parameter.
     console.log('Logged in Successfully!');
-    console.log(e, accuracy);
+    console.log(e, res);
   }, []);
   return (
     <div>
