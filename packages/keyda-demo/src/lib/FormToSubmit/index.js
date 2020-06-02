@@ -90,7 +90,7 @@ const FormToSubmit = (props) => {
         });
 
         console.log(keyState);
-        if (responseCount > MAX_TRAIN_COUNT && status === 200) {
+        if (responseCount === MAX_TRAIN_COUNT && status === 200) {
           keyDispatch({
             type: 'SUBMIT',
           });
