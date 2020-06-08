@@ -4,6 +4,29 @@ import axios from 'axios';
 
 import { useKeyStateContext, useKeyStateDispatch } from '../Context';
 
+const keyTypePatternComputation = (keyUpList, keyDownList) => {
+  const computeList = [];
+
+  for (let i = 0; i < keyDownList.length; i++) {
+    if (i === 0) {
+      computeList.push(
+        ((keyUpList[i] - keyDownList[i]) / 1000).toFixed(4).toString()
+      );
+    } else {
+      computeList.push(
+        ((keyDownList[i] - keyDownList[i - 1]) / 1000).toFixed(4).toString()
+      );
+      computeList.push(
+        ((keyDownList[i] - keyUpList[i - 1]) / 1000).toFixed(4).toString()
+      );
+      computeList.push(
+        ((keyUpList[i] - keyDownList[i]) / 1000).toFixed(4).toString()
+      );
+    }
+  }
+  return computeList;
+};
+
 const FormToSubmit = (props) => {
   const MAX_TRAIN_COUNT = 10;
   const definedFormTypes = ['REGISTER', 'LOGIN'];
@@ -29,8 +52,22 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        const keyDownList = keyState.keyDownList;
+        const keyUpList = keyState.keyUpList;
+
+        const isWrongTypingDetected = keyUpList.length !== keyDownList.length;
+        if (isWrongTypingDetected) {
+          console.warn('Unmatched typing is detected!');
+          keyDispatch({
+            type: 'WRONG_TYPING',
+          });
+          return;
+        }
+
+        const keyTimeList = keyTypePatternComputation(keyUpList, keyDownList);
+
         const dataToSubmit = {
-          keyTimeList: keyState.keyTimeList,
+          keyTimeList: keyTimeList,
           userId: keyState.userId,
           trainCount: keyState.trainCount,
         };
@@ -44,7 +81,7 @@ const FormToSubmit = (props) => {
         const msg = request.data.message;
         const status = request.status;
         if (error) {
-          console.log(msg);
+          console.warn(msg);
         }
         console.log(request);
         keyDispatch({
@@ -57,13 +94,11 @@ const FormToSubmit = (props) => {
           keyDispatch({
             type: 'SUBMIT',
           });
-          onSubmit(e);
+          onSubmit(e, request);
         }
       })(); // Immediately invoked function expression
       if (keyState.inputRef.current) {
         keyState.inputRef.current.setValueClear();
-        keyState.inputRef.current.setLastKeyDown(0);
-        keyState.inputRef.current.setLastKeyUp(0);
       }
       if (keyState.trainCount === MAX_TRAIN_COUNT) {
         e.target.reset();
@@ -76,8 +111,22 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        const keyDownList = keyState.keyDownList;
+        const keyUpList = keyState.keyUpList;
+
+        const isWrongTypingDetected = keyUpList.length !== keyDownList.length;
+        if (isWrongTypingDetected) {
+          console.warn('Unmatched typing is detected!');
+          keyDispatch({
+            type: 'WRONG_TYPING',
+          });
+          return;
+        }
+
+        const keyTimeList = keyTypePatternComputation(keyUpList, keyDownList);
+
         const dataToSubmit = {
-          keyTimeList: keyState.keyTimeList,
+          keyTimeList: keyTimeList,
           userId: keyState.userId,
         };
 
@@ -87,19 +136,14 @@ const FormToSubmit = (props) => {
         console.log(request);
 
         const status = request.status;
-        const accuracy = request.data.accuracy;
         keyDispatch({
           type: 'SUBMIT',
         });
         if (status === 200) {
-          onSubmit(e, accuracy); // to transfer the accuracy score to developer, it's inevitable to write this way. So, it will be noticed to user developer.
+          onSubmit(e, request); // to transfer the accuracy score to developer, it's inevitable to write this way. So, it will be noticed to user developer.
         }
       })();
       e.target.reset();
-      if (keyState.inputRef.current) {
-        keyState.inputRef.current.setLastKeyDown(0);
-        keyState.inputRef.current.setLastKeyUp(0);
-      }
     },
     [onSubmit, suffix, keyState, keyDispatch]
   );
