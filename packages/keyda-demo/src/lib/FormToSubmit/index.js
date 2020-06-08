@@ -52,6 +52,7 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        e.persist();
         const keyDownList = keyState.keyDownList;
         const keyUpList = keyState.keyUpList;
 
@@ -95,13 +96,11 @@ const FormToSubmit = (props) => {
             type: 'SUBMIT',
           });
           onSubmit(e, request);
+          e.target.reset();
         }
       })(); // Immediately invoked function expression
       if (keyState.inputRef.current) {
         keyState.inputRef.current.setValueClear();
-      }
-      if (keyState.trainCount === MAX_TRAIN_COUNT) {
-        e.target.reset();
       }
     },
     [keyState, onSubmit, keyDispatch, suffix]
@@ -111,6 +110,7 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        e.persist();
         const keyDownList = keyState.keyDownList;
         const keyUpList = keyState.keyUpList;
 
@@ -142,8 +142,8 @@ const FormToSubmit = (props) => {
         if (status === 200) {
           onSubmit(e, request); // to transfer the accuracy score to developer, it's inevitable to write this way. So, it will be noticed to user developer.
         }
+        e.target.reset();
       })();
-      e.target.reset();
     },
     [onSubmit, suffix, keyState, keyDispatch]
   );
