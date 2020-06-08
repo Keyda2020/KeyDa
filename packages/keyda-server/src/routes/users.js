@@ -161,16 +161,11 @@ router.post('/login', async (req, res) => {
         "Your data doesn't exist in a server. Please try again from the registration step.",
     });
   }
+  const prevUserData = fs.readFileSync(USER_DATA_PATH, 'utf-8').split(/\r?\n/);
+  console.log(prevUserData);
+  const prevDataLength = prevUserData[0].split(',').length;
 
-  console.log(
-    fs.readFileSync(USER_DATA_PATH, 'utf-8').split(/\r?\n/)[0].split(','),
-  );
-  const dataLength = fs
-    .readFileSync(USER_DATA_PATH, 'utf-8')
-    .split(/\r?\n/)[0]
-    .split(',').length;
-
-  const isSameDataLength = keyTimeList.length === dataLength;
+  const isSameDataLength = keyTimeList.length === prevDataLength;
 
   if (!isSameDataLength) {
     return res.status(202).send({
@@ -186,6 +181,28 @@ router.post('/login', async (req, res) => {
     includeEndRowDelimiter: true,
     writeHeaders: false,
   });
+
+  const currentUserData = fs
+    .readFileSync(USER_DATA_PATH, 'utf-8')
+    .split(/\r?\n/);
+  const currentDataLength = currentUserData[0].split(',').length;
+  const isExceedMaxRow = currentUserData.length >= 402;
+
+  if (isExceedMaxRow) {
+    const dataFrame = initializeCSV(currentDataLength);
+    currentUserData.forEach((d, i) => {
+      if (i > 1 && i < currentUserData.length - 1) {
+        const transformed = d.split(',');
+        dataFrame.push(transformed);
+      }
+    });
+
+    const stream = fs.createWriteStream(USER_DATA_PATH);
+    writeToStream(stream, dataFrame, {
+      headers: true,
+      includeEndRowDelimiter: true,
+    });
+  }
 
   const options = {
     mode: 'text',
@@ -203,7 +220,7 @@ router.post('/login', async (req, res) => {
     });
   });
   const accuracyResult = parseFloat(resultFromModel[0]);
-  if (accuracyResult > 70) {
+  if (accuracyResult > 50) {
     return res.status(200).send({
       success: true,
       error: false,
@@ -211,6 +228,25 @@ router.post('/login', async (req, res) => {
       message: 'Your typing pattern is correct',
     });
   } else {
+    // const firstRow = prevUserData[0].split(',');
+    // console.log(firstRow);
+    const dataFrame = initializeCSV(prevDataLength);
+    console.log(dataFrame);
+    prevUserData.forEach((d, i) => {
+      if (i > 0 && i < prevUserData.length - 1) {
+        const transformed = d.split(',');
+        // console.log(transformed);
+        dataFrame.push(transformed);
+      }
+    });
+    console.log(dataFrame);
+
+    const stream = fs.createWriteStream(USER_DATA_PATH);
+    writeToStream(stream, dataFrame, {
+      headers: true,
+      includeEndRowDelimiter: true,
+    });
+
     return res.status(202).send({
       success: false,
       error: true,

@@ -31,18 +31,18 @@ def run_model(path):
         (res[-1]-np.max(res))+100
     print(scaled_score)
 
-    n_sample = data.shape[0]
-    threshold = 50  # 후에 결정
-    if scaled_score >= threshold:
-        if n_sample >= 400:
-            df = pd.read_csv(path)
-            df = df.iloc[1:1+400, :]
-            df.to_csv(path, index=False)  # 파일 이름 본인 것으로 변경
-        else:
-            pass
-    else:
-        data_set = data_set.iloc[0:data_set.shape[0]-1, :]
-        data_set.to_csv(path, index=False)  # 파일 이름 본인 것으로 변경
+    # n_sample = data.shape[0]
+    # threshold = 50  # 후에 결정
+    # if scaled_score >= threshold:
+    #     if n_sample >= 400:
+    #         df = pd.read_csv(path)
+    #         df = df.iloc[1:1+400, :]
+    #         df.to_csv(path, index=False)  # 파일 이름 본인 것으로 변경
+    #     else:
+    #         pass
+    # else:
+    #     data_set = data_set.iloc[0:data_set.shape[0]-1, :]
+    #     data_set.to_csv(path, index=False)  # 파일 이름 본인 것으로 변경
 
 
 if __name__ == '__main__':
