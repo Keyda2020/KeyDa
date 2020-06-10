@@ -9,6 +9,7 @@ const {
   getDomainFromUrl,
   initializeCSV,
   fixDataToRow,
+  reSaveUserData,
 } = require('../utils/JSUtility');
 const router = express.Router();
 
@@ -161,16 +162,10 @@ router.post('/login', async (req, res) => {
         "Your data doesn't exist in a server. Please try again from the registration step.",
     });
   }
+  const prevUserData = fs.readFileSync(USER_DATA_PATH, 'utf-8').split(/\r?\n/);
+  const prevDataLength = prevUserData[0].split(',').length;
 
-  console.log(
-    fs.readFileSync(USER_DATA_PATH, 'utf-8').split(/\r?\n/)[0].split(','),
-  );
-  const dataLength = fs
-    .readFileSync(USER_DATA_PATH, 'utf-8')
-    .split(/\r?\n/)[0]
-    .split(',').length;
-
-  const isSameDataLength = keyTimeList.length === dataLength;
+  const isSameDataLength = keyTimeList.length === prevDataLength;
 
   if (!isSameDataLength) {
     return res.status(202).send({
@@ -202,8 +197,20 @@ router.post('/login', async (req, res) => {
       return resolve(results);
     });
   });
-  const accuracyResult = parseFloat(resultFromModel[0]);
-  if (accuracyResult > 70) {
+  const accuracyResult = parseFloat(resultFromModel[0]).toFixed(4);
+
+  const currentUserData = fs
+    .readFileSync(USER_DATA_PATH, 'utf-8')
+    .split(/\r?\n/);
+  if (accuracyResult > 50) {
+    // Threshold for the score
+    const recordsLength = currentUserData.length;
+    const isExceedMaxRecords = recordsLength >= 403;
+    if (isExceedMaxRecords) {
+      // include header and blank and 401 actual records
+      reSaveUserData(USER_DATA_PATH, currentUserData, true);
+    }
+
     return res.status(200).send({
       success: true,
       error: false,
@@ -211,6 +218,7 @@ router.post('/login', async (req, res) => {
       message: 'Your typing pattern is correct',
     });
   } else {
+    reSaveUserData(USER_DATA_PATH, currentUserData, false);
     return res.status(202).send({
       success: false,
       error: true,
