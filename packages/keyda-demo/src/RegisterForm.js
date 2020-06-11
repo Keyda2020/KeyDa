@@ -8,7 +8,6 @@ const RegisterForm = (props) => {
     console.log('Registered Successfully!');
     console.log(e, res);
   }, []);
-  
   return (
     <div>
       <Form onSubmit={handleSubmit} formType="REGISTER">

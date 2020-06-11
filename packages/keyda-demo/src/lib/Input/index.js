@@ -56,7 +56,6 @@ const Input = (props) => {
         inputRef.current.setValueClear = () => {
           inputRef.current.value = '';
         };
-
         keyDispatch({
           type: 'SET_REF',
           inputRef: inputRef,
