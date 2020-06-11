@@ -77,7 +77,7 @@ const FormToSubmit = (props) => {
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
 
-        const { count, error, message } = request.data.count;
+        const { count, error, message, success } = request.data;
         const status = request.status;
         if (error) {
           console.error(message);
@@ -132,7 +132,7 @@ const FormToSubmit = (props) => {
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
 
-        const { error, message, accuracy } = request.data;
+        const { error, message, accuracy, success } = request.data;
         const status = request.status;
         if (error) {
           console.error(`${message} : ${accuracy ? accuracy : ''}`);
