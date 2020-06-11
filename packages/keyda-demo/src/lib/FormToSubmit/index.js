@@ -135,7 +135,7 @@ const FormToSubmit = (props) => {
         const { error, message, accuracy, success } = request.data;
         const status = request.status;
         if (error) {
-          console.error(`${message} : ${accuracy ? accuracy : ''}`);
+          console.error(message);
         }
         console.log(request);
 
