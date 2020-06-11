@@ -77,21 +77,19 @@ const FormToSubmit = (props) => {
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
 
-        const responseCount = request.data.count;
-        const error = request.data.error;
-        const msg = request.data.message;
+        const { count, error, message } = request.data.count;
         const status = request.status;
         if (error) {
-          console.warn(msg);
+          console.error(message);
         }
         console.log(request);
         keyDispatch({
           type: 'REGISTER',
-          trainCount: responseCount,
+          trainCount: count,
         });
 
         console.log(keyState);
-        if (responseCount === MAX_TRAIN_COUNT && status === 200) {
+        if (count === MAX_TRAIN_COUNT && status === 200) {
           keyDispatch({
             type: 'SUBMIT',
           });
@@ -133,17 +131,22 @@ const FormToSubmit = (props) => {
         const request = await axios
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
+
+        const { error, message, accuracy } = request.data;
+        const status = request.status;
+        if (error) {
+          console.error(`${message} : ${accuracy ? accuracy : ''}`);
+        }
         console.log(request);
 
-        const status = request.status;
         keyDispatch({
           type: 'SUBMIT',
         });
         if (status === 200) {
           onSubmit(e, request); // to transfer the accuracy score to developer, it's inevitable to write this way. So, it will be noticed to user developer.
         }
-        e.target.reset();
       })();
+      e.target.reset();
     },
     [onSubmit, suffix, keyState, keyDispatch]
   );
