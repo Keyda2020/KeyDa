@@ -52,6 +52,7 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        e.persist();
         const keyDownList = keyState.keyDownList;
         const keyUpList = keyState.keyUpList;
 
@@ -76,32 +77,28 @@ const FormToSubmit = (props) => {
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
 
-        const responseCount = request.data.count;
-        const error = request.data.error;
-        const msg = request.data.message;
+        const { count, error, message, success } = request.data;
         const status = request.status;
         if (error) {
-          console.warn(msg);
+          console.error(message);
         }
         console.log(request);
         keyDispatch({
           type: 'REGISTER',
-          trainCount: responseCount,
+          trainCount: count,
         });
 
         console.log(keyState);
-        if (responseCount === MAX_TRAIN_COUNT && status === 200) {
+        if (count === MAX_TRAIN_COUNT && status === 200) {
           keyDispatch({
             type: 'SUBMIT',
           });
           onSubmit(e, request);
+          e.target.reset();
         }
       })(); // Immediately invoked function expression
       if (keyState.inputRef.current) {
         keyState.inputRef.current.setValueClear();
-      }
-      if (keyState.trainCount === MAX_TRAIN_COUNT) {
-        e.target.reset();
       }
     },
     [keyState, onSubmit, keyDispatch, suffix]
@@ -111,6 +108,7 @@ const FormToSubmit = (props) => {
     (e) => {
       e.preventDefault();
       (async () => {
+        e.persist();
         const keyDownList = keyState.keyDownList;
         const keyUpList = keyState.keyUpList;
 
@@ -133,9 +131,14 @@ const FormToSubmit = (props) => {
         const request = await axios
           .post(REQUEST_URL + suffix, dataToSubmit)
           .then((response) => response);
+
+        const { error, message, accuracy, success } = request.data;
+        const status = request.status;
+        if (error) {
+          console.error(message);
+        }
         console.log(request);
 
-        const status = request.status;
         keyDispatch({
           type: 'SUBMIT',
         });
