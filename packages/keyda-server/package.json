@@ -27,7 +27,7 @@
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
     "fast-csv": "^4.3.6",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment": "^2.25.3",
     "python-shell": "^2.0.1"
   },
