@@ -7,7 +7,7 @@
   "author": "Anthony Min",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "lodash": "^4.17.21",
     "react": "^16.13.1"
   }
